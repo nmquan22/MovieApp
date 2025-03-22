@@ -1,0 +1,8 @@
+@import "tailwindcss";
+a {
+    color: white !important;
+    text-decoration: none;
+}
+button {
+    background-color: red !important;
+}
