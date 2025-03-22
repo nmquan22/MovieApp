@@ -6,3 +6,21 @@ a {
 button {
     background-color: red !important;
 }
+/* Ensure the carousel container has no overflow issues */
+.carousel-container {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* Ensure each item has proper spacing and does not shrink */
+  .react-multi-carousel-item {
+    flex: 0 0 auto; /* Prevent items from shrinking */
+    margin-right: 16px; /* Add spacing between items */
+  }
+  
+  /* Optional: Add hover effect for items */
+  .react-multi-carousel-item:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    transition: transform 0.3s ease-in-out;
+  }
