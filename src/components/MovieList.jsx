@@ -1,7 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import Modal from 'react-modal';
+import YouTube from 'react-youtube';
+
+const onPlayerReady = (event) => {
+  event.target.playVideo();
+};
+Modal.setAppElement("#root"); 
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
+const opts = {
+  height: '390',
+  width: '640',
+  playerVars: {
+    // https://developers.google.com/youtube/player_parameters
+    autoplay: 1,
+  },
+};
 
 const responsive = {
   superLargeDesktop: {
@@ -23,6 +50,35 @@ const responsive = {
 };
 
 const MovieList = ({ title, data }) => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [trailerKey,setTrailerKey] = useState("");
+  const handleTrailer = async(id)=>{
+    setTrailerKey('')
+    try{
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_KEY}`,
+        },
+      };
+      const url = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
+      const response = await fetch(url, options); 
+      const data = await response.json(); 
+      console.log(data);
+
+      if (data.results && data.results.length > 0) {
+        setTrailerKey(data.results[0].key);
+        setModalIsOpen(true);
+      } else {
+        console.log("No trailer found.");
+        setModalIsOpen(false);
+      }
+    } catch(error){
+      setModalIsOpen(false);
+      console.log(error);
+    }
+  }
   return (
     <div className="text-white p-10 mb-10">
       <h2 className="uppercase text-3xl font-bold">{title}</h2>
@@ -55,8 +111,9 @@ const MovieList = ({ title, data }) => {
             <div
               key={item.id}
               className="w-[200px] h-[300px] relative group flex-shrink-0"
+              onClick={()=>handleTrailer(item.id)}
             >
-              <div className="relative group w-[200px] h-[300px] overflow-hidden transform transition-transform duration-300 ease-in-out origin-center group-hover:scale-105">
+              <div className="relative group w-[200px] h-[300px] overflow-hidden transform transition-transform duration-300 ease-in-out origin-center group-hover:scale-105 cursor-pointer">
                 <div className="absolute top-0 left-0 w-full h-full bg-black/40" />
                 <img
                   src={`${import.meta.env.VITE_IMAGE_URL}${item.poster_path}`}
@@ -72,6 +129,15 @@ const MovieList = ({ title, data }) => {
             </div>
           ))}
       </Carousel>
+
+      <Modal
+        isOpen={modalIsOpen}    
+        onRequestClose={()=>setModalIsOpen(false)}
+        style={customStyles}
+        contentLabel="Example Modal"
+      >
+        <YouTube videoId={trailerKey} opts={opts} onReady={onPlayerReady} />
+      </Modal>
     </div>
   );
 };

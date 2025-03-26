@@ -1,4 +1,9 @@
-const Header = () =>{
+import { useState } from "react";
+import PropTypes from "prop-types";
+
+const Header = ({ onSearch }) =>{
+    const [search, setSearch] = useState("");
+
     return(
         <div className = "p-4 bg-black flex items-center justify-between w-full fixed top-0 left-0">
             <div className = "flex items-center space-x-4">
@@ -14,10 +19,19 @@ const Header = () =>{
 
             </div>
             <div className = "flex items-center space-x-4">
-                <input type = "text" placeholder="Search" className="p-4 text-black bg-white rounded-md"></input>
-                <button className="p-3 text-white bg-red-600 rounded-md">Search</button>
+                <input type = "text" placeholder="Search" className="p-4 text-black bg-white rounded-md "  
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)}>
+                </input>
+                <button className="p-3 text-white bg-red-600 rounded-md"
+                onClick={() => onSearch(search)}>Search</button>
             </div>
         </div>
     )
 }
+
+Header.propTypes = {
+    onSearch: PropTypes.func.isRequired,
+};
+
 export default Header;
